@@ -2,7 +2,7 @@ terraform {
   required_version = "~>1.8"
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "~>5.60"
     }
   }
@@ -13,7 +13,7 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region = "us-east-1"
+  region  = "us-east-1"
   profile = "cloudguru"
 }
 
@@ -23,14 +23,14 @@ data "aws_vpc" "default" {
 
 data "aws_subnets" "default" {
   filter {
-    name = "vpc-id"
+    name   = "vpc-id"
     values = [data.aws_vpc.default.id]
   }
 }
 
 resource "aws_launch_template" "example" {
-  image_id = "ami-0866a3c8686eaeeba"
-  instance_type = "t3.micro"
+  image_id               = "ami-0866a3c8686eaeeba"
+  instance_type          = "t3.micro"
   vpc_security_group_ids = [aws_security_group.instance.id]
 
   user_data = base64encode(
@@ -60,8 +60,8 @@ resource "aws_autoscaling_group" "example" {
   max_size = 10
 
   tag {
-    key = "Name"
-    value = "opentofu-asg-example"
+    key                 = "Name"
+    value               = "opentofu-asg-example"
     propagate_at_launch = true
   }
 }
@@ -71,11 +71,11 @@ resource "aws_security_group" "instance" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_webserver_ipv4" {
-  security_group_id = aws_security_group.instance.id
+  security_group_id            = aws_security_group.instance.id
   referenced_security_group_id = aws_security_group.alb.id
-  from_port = var.server_port
-  ip_protocol = "tcp"
-  to_port = var.server_port
+  from_port                    = var.server_port
+  ip_protocol                  = "tcp"
+  to_port                      = var.server_port
 }
 
 resource "aws_security_group" "alb" {
@@ -84,29 +84,29 @@ resource "aws_security_group" "alb" {
 
 resource "aws_vpc_security_group_ingress_rule" "allow_inbound_http" {
   security_group_id = aws_security_group.alb.id
-  cidr_ipv4 = "0.0.0.0/0"
-  from_port = 80
-  ip_protocol = "tcp"
-  to_port = 80
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 80
+  ip_protocol       = "tcp"
+  to_port           = 80
 }
 
 resource "aws_vpc_security_group_egress_rule" "allow_outbound_all" {
   security_group_id = aws_security_group.alb.id
-  cidr_ipv4 = "0.0.0.0/0"
-  ip_protocol = "-1"
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
 }
 
 resource "aws_lb" "example" {
-  name = "opentofu-asg-example"
+  name               = "opentofu-asg-example"
   load_balancer_type = "application"
-  subnets = data.aws_subnets.default.ids
-  security_groups = [aws_security_group.alb.id]
+  subnets            = data.aws_subnets.default.ids
+  security_groups    = [aws_security_group.alb.id]
 }
 
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.example.arn
-  port = 80
-  protocol = "HTTP"
+  port              = 80
+  protocol          = "HTTP"
 
   # By default, return a simple 404 page
   default_action {
@@ -114,31 +114,31 @@ resource "aws_lb_listener" "http" {
     fixed_response {
       content_type = "text/plain"
       message_body = "404: page not found"
-      status_code = 404
+      status_code  = 404
     }
   }
 }
 
 resource "aws_lb_target_group" "asg" {
-  name = "opentofu-asg-example"
-  port = var.server_port
+  name     = "opentofu-asg-example"
+  port     = var.server_port
   protocol = "HTTP"
-  vpc_id = data.aws_vpc.default.id
+  vpc_id   = data.aws_vpc.default.id
 
   health_check {
-    path = "/"
-    protocol = "HTTP"
-    matcher = "200"
-    interval = 15
-    timeout = 3
-    healthy_threshold = 2
+    path                = "/"
+    protocol            = "HTTP"
+    matcher             = "200"
+    interval            = 15
+    timeout             = 3
+    healthy_threshold   = 2
     unhealthy_threshold = 2
   }
 }
 
 resource "aws_lb_listener_rule" "asg" {
   listener_arn = aws_lb_listener.http.arn
-  priority = 100
+  priority     = 100
 
   condition {
     path_pattern {
@@ -147,7 +147,7 @@ resource "aws_lb_listener_rule" "asg" {
   }
 
   action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_lb_target_group.asg.arn
   }
 }

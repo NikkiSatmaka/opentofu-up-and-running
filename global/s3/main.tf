@@ -2,7 +2,7 @@ terraform {
   required_version = "~>1.8"
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "~>5.60"
     }
   }
@@ -13,7 +13,7 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region = "us-east-1"
+  region  = "us-east-1"
   profile = "cloudguru"
 }
 
@@ -47,17 +47,17 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
 
 # Explicitly block all public access to the S3 bucket
 resource "aws_s3_bucket_public_access_block" "public_access" {
-  bucket = aws_s3_bucket.terraform_state.id
-  block_public_acls = true
-  block_public_policy = true
-  ignore_public_acls = true
+  bucket                  = aws_s3_bucket.terraform_state.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
   restrict_public_buckets = true
 }
 
 resource "aws_dynamodb_table" "terraform_locks" {
-  name = "opentofu-up-and-running-locks"
+  name         = "opentofu-up-and-running-locks"
   billing_mode = "PAY_PER_REQUEST"
-  hash_key = "LockID"
+  hash_key     = "LockID"
 
   attribute {
     name = "LockID"
