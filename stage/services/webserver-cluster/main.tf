@@ -41,7 +41,7 @@ resource "aws_launch_template" "example" {
     EOF
   )
 
-  # Required when using a launch configuration with an auto scaling group
+  # Required when using a launch template with an auto scaling group
   lifecycle {
     create_before_destroy = true
   }
