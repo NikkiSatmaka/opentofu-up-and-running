@@ -17,6 +17,17 @@ provider "aws" {
   profile = "cloudguru"
 }
 
+data "terraform_remote_state" "db" {
+  backend = "s3"
+
+  config = {
+    bucket  = "opentofu-up-and-running-state-462468"
+    key     = "stage/data-stores/mysql/terraform.tfstate"
+    region  = "us-east-1"
+    profile = "cloudguru"
+  }
+}
+
 data "aws_vpc" "default" {
   default = true
 }
@@ -34,11 +45,13 @@ resource "aws_launch_template" "example" {
   vpc_security_group_ids = [aws_security_group.instance.id]
 
   user_data = base64encode(
-    <<-EOF
-      #!/usr/bin/env bash
-      echo "Hello, World" > index.html
-      nohup busybox httpd -f -p ${var.server_port} &
-    EOF
+    templatefile(
+      "user-data.sh", {
+        server_port = var.server_port
+        db_address  = data.terraform_remote_state.db.outputs.address
+        db_port     = data.terraform_remote_state.db.outputs.port
+      }
+    )
   )
 
   # Required when using a launch template with an auto scaling group
