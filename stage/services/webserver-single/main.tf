@@ -32,7 +32,7 @@ data "aws_ec2_managed_prefix_list" "instance_connect" {
 
 resource "aws_instance" "example" {
   ami = "ami-0866a3c8686eaeeba"
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   vpc_security_group_ids = [aws_security_group.instance.id]
 
   user_data = <<-EOF

@@ -30,7 +30,7 @@ data "aws_subnets" "default" {
 
 resource "aws_launch_template" "example" {
   image_id = "ami-0866a3c8686eaeeba"
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   vpc_security_group_ids = [aws_security_group.instance.id]
 
   user_data = base64encode(
