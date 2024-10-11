@@ -18,7 +18,7 @@ provider "aws" {
 }
 
 module "database" {
-  source               = "../../../modules/data-stores/mysql"
+  source               = "github.com/NikkiSatmaka/opentofu-up-and-running-modules//data-stores/mysql?ref=v0.0.1"
   db_username          = var.db_password
   db_password          = var.db_password
   db_identifier_prefix = "db-prod-"

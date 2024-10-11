@@ -18,7 +18,7 @@ provider "aws" {
 }
 
 module "webserver_cluster" {
-  source = "../../../modules/services/webserver-cluster"
+  source = "github.com/NikkiSatmaka/opentofu-up-and-running-modules//services/webserver-cluster?ref=v0.0.1"
 
   cluster_name           = "webservers-prod"
   db_remote_state_bucket = "opentofu-up-and-running-state-462468"
