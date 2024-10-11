@@ -21,7 +21,7 @@ module "webserver_cluster" {
   source = "../../../modules/services/webserver-cluster"
 
   cluster_name           = "webservers-stage"
-  db_remote_state_bucket = "opentofu-up-and-running-state-548315"
+  db_remote_state_bucket = "opentofu-up-and-running-state-462468"
   db_remote_state_key    = "stage/data-stores/mysql/terraform.tfstate"
 
   instance_type = "t2.micro"
