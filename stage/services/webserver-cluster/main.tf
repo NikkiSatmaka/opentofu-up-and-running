@@ -7,12 +7,7 @@ terraform {
     }
   }
   backend "s3" {
-    profile        = "cloudguru"
-    bucket         = "opentofu-up-and-running-state-548315"
-    key            = "stage/services/webserver-cluster/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-    dynamodb_table = "opentofu-up-and-running-locks"
+    key = "stage/services/webserver-cluster/terraform.tfstate"
   }
 }
 
