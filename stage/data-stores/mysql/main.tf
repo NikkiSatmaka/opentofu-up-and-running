@@ -7,7 +7,12 @@ terraform {
     }
   }
   backend "s3" {
-    key = "stage/data-stores/mysql/terraform.tfstate"
+    profile        = "cloudguru"
+    bucket         = "opentofu-up-and-running-state-548315"
+    key            = "stage/data-stores/mysql/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "opentofu-up-and-running-locks"
   }
 }
 
@@ -17,14 +22,12 @@ provider "aws" {
   profile = "cloudguru"
 }
 
-resource "aws_db_instance" "example" {
-  identifier_prefix   = "opentofu-up-and-running"
-  engine              = "mysql"
-  allocated_storage   = 10
-  instance_class      = "db.t3.micro"
-  skip_final_snapshot = true
-  db_name             = "example_database"
-
-  username = var.db_username
-  password = var.db_password
+module "database" {
+  source               = "../../../modules/data-stores/mysql"
+  db_username          = var.db_password
+  db_password          = var.db_password
+  db_identifier_prefix = "opentofu-up-and-running-stage-"
+  db_name              = "example"
+  db_instance_class    = "db.t3.micro"
+  allocated_storage    = 10
 }
